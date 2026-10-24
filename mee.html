@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mee</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F8D7D6">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --ink:#5A3A3D; --muted:#8B696C; --line:#EBCFC8; --card:#FFFBF7; --paper:#FFF6EF;
+  --rose:#DB8C9A; --rose-ink:#4A2A2E; --soft:#F6D3D6; --danger:#B3372E;
+  --t-alarm:#F8D9DC; --t-notes:#FBEBCB; --t-mine:#E6EBD3; --t-journal:#E7DEF1;
+  --hand:"Caveat","Bradley Hand","Segoe Print","Comic Sans MS",cursive;
+  --hand2:"Patrick Hand","Segoe Print","Comic Sans MS",cursive;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:#F8D7D6;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.phone{
+  max-width:520px;min-height:100vh;margin:0 auto;position:relative;overflow:hidden;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .6 0 0 0 0 .4 0 0 0 0 .4 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 15% 8%,#FFF4EC 0,transparent 50%),
+    linear-gradient(170deg,#FCE7DD,#F8D6D4);
+}
+.screen{display:none;min-height:100vh;padding:20px 18px 90px;position:relative}
+.screen.on{display:block}
+:focus-visible{outline:3px solid var(--rose);outline-offset:2px}
+button{font:inherit;color:inherit;cursor:pointer}
+img{max-width:100%}
+.hand{font-family:var(--hand)}
+.h2{font-family:var(--hand2)}
+.deco{position:absolute;pointer-events:none}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.top h2{margin:0;flex:1;font:500 30px/1.2 var(--hand)}
+.top h2 i{color:var(--rose);font-style:normal;font-size:22px}
+.icon-btn{width:42px;height:42px;border-radius:50%;border:0;background:transparent;font-size:22px;display:grid;place-items:center;color:var(--ink)}
+.icon-btn.fill{background:var(--rose);color:var(--rose-ink);font-size:26px;line-height:1;font-weight:600;box-shadow:0 2px 0 rgba(120,60,70,.2)}
+.btn{border:0;border-radius:18px;background:var(--rose);color:var(--rose-ink);padding:13px 28px;font-weight:700;min-width:150px;box-shadow:0 2px 0 rgba(120,60,70,.22)}
+.btn.wide{width:100%}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:none;font-weight:600}
+.btn.warn{background:transparent;color:var(--danger);border:1px solid var(--line);min-width:0;box-shadow:none}
+.err{color:var(--danger);min-height:22px;font-size:14px;margin:8px 0;text-align:center}
+.hint{color:var(--muted);font-size:13px;margin-top:6px;text-align:center}
+.foot{text-align:center;font:500 24px var(--hand);color:var(--muted);margin-top:26px;position:relative}
+
+/* lock */
+.center{flex-direction:column;align-items:center;text-align:center}
+.screen.center.on{display:flex}
+.logo{margin:30px 0 0;font:500 76px/1 var(--hand);position:relative;padding:0 14px 4px;border-bottom:3px solid var(--ink)}
+.logo i{color:var(--rose);font-style:normal;font-size:30px;position:absolute;right:-18px;top:12px}
+.tag{font:400 24px/1.35 var(--hand2);color:var(--muted);margin:14px 0 4px}
+.tag span{display:block;margin-left:50px}
+.girl-lock{width:min(58%,260px);align-self:flex-start;margin:0 0 -14px 6%;position:relative;z-index:1}
+.field{width:100%;position:relative}
+.field input{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px 52px 15px 46px}
+.field .lk{position:absolute;left:16px;top:50%;transform:translateY(-50%);opacity:.7}
+.field .eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;background:transparent;font-size:18px}
+
+/* welcome */
+.bubble{position:relative;width:min(88%,330px);align-self:flex-end;margin:28px 0 0}
+.bubble svg{display:block;width:100%;height:auto}
+.bubble p{position:absolute;inset:0;display:grid;place-items:center;margin:0;padding:0 18%;font:500 31px/1.1 var(--hand);color:var(--ink)}
+.girl-welcome{width:100%;max-width:420px;margin:-8px 0 -8px;position:relative;z-index:1}
+.msg{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px 22px;font:400 21px/1.5 var(--hand2);margin:0 0 22px;position:relative;z-index:2;width:100%}
+
+/* home */
+.home-top{display:flex;align-items:center}
+.home-top h1{margin:0;flex:1;font:500 42px/1 var(--hand)}
+.home-top h1 i{color:var(--rose);font-style:normal;font-size:24px}
+.hero{display:flex;align-items:flex-end;margin:6px 0 14px}
+.hero .q{width:58%;transform:rotate(-1deg)}
+.hero .g{width:44%;margin-left:-4%;position:relative;z-index:1}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tile{border:1px solid rgba(255,255,255,.7);border-radius:24px;padding:16px 10px 16px;text-align:center;box-shadow:0 3px 0 rgba(150,90,100,.12), inset 0 0 0 1px rgba(150,90,100,.1)}
+.tile img{height:56px;width:auto;display:block;margin:0 auto 4px}
+.tile b{display:block;font:500 28px/1.1 var(--hand)}
+.tile small{display:block;color:var(--muted);font:400 15px/1.25 var(--hand2);margin-top:3px}
+.flowers{display:flex;justify-content:space-between;align-items:flex-end}
+.flowers img{height:64px;width:auto}
+
+/* search chips list */
+.search{position:relative;margin-bottom:12px}
+.search input{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:24px;padding:12px 16px 12px 44px}
+.search span{position:absolute;left:16px;top:50%;transform:translateY(-50%);opacity:.7}
+.chips{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:22px;padding:6px 18px;white-space:nowrap;font-size:14px;color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--rose);color:var(--rose-ink);border-color:var(--rose);font-weight:700}
+.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:10px;box-shadow:0 2px 0 rgba(150,90,100,.07)}
+.row .th{width:58px;height:58px;border-radius:14px;flex:none;display:block;object-fit:cover}
+.row .ic{width:52px;height:52px;border-radius:50%;flex:none;display:block;border:0;padding:0;background:transparent}
+.row .ic img{width:100%;height:100%;display:block}
+.row .tx{flex:1;min-width:0;cursor:pointer}
+.row .tx b{display:block;font-weight:700}
+.row .tx p{margin:0;color:var(--muted);font-size:14px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.row .tx small{color:var(--muted);font-size:12px}
+.row .more{color:var(--muted);font-size:20px;padding:0 6px;align-self:flex-start}
+.alarm-time{font-size:23px;font-weight:700;line-height:1.2}
+.alarm-time span{font-size:13px;font-weight:600}
+.alarm-lbl{color:var(--ink);font-size:15px}
+.alarm-sub{color:var(--muted);font-size:13px;overflow-wrap:anywhere}
+.tog{appearance:none;-webkit-appearance:none;width:50px;height:28px;border-radius:99px;background:#E2CFCB;position:relative;cursor:pointer;border:0;flex:none;margin:0}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.tog:checked{background:var(--rose)}
+.tog:checked::after{left:25px}
+.empty{text-align:center;color:var(--muted);padding:26px 8px;font:400 22px/1.4 var(--hand2)}
+.fab{position:fixed;right:max(18px,calc(50% - 242px));bottom:24px;width:54px;height:54px;border-radius:50%;border:0;background:var(--rose);color:var(--rose-ink);font-size:30px;line-height:1;box-shadow:0 4px 10px rgba(120,60,70,.3);z-index:6;display:none}
+.fab.on{display:block}
+
+/* journal */
+.page{background:var(--card);border-radius:6px;padding:26px 16px 16px;box-shadow:0 3px 0 rgba(150,90,100,.15);position:relative;margin:14px 0 22px}
+.page::before{content:"";position:absolute;top:-12px;left:50%;width:84px;height:26px;transform:translateX(-50%) rotate(-3deg);background:rgba(240,170,185,.7)}
+.page h3{margin:0;text-align:center;font:500 30px var(--hand)}
+.page .sub{text-align:center;color:var(--muted);font:400 20px var(--hand2);margin-bottom:6px}
+.page .nb{display:block;width:62%;margin:2px auto 8px}
+.inp{position:relative;margin-top:10px}
+.inp span{position:absolute;left:12px;top:12px;opacity:.65}
+.inp input,.inp textarea{width:100%;font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px 12px 11px 38px}
+.inp textarea{min-height:130px;resize:vertical}
+.page .acts{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px}
+.page .acts .btn{min-width:0;padding:11px 24px}
+.preview{width:90px;height:90px;object-fit:cover;border-radius:10px;margin-top:10px;display:block}
+.past{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--rose);border-radius:12px;padding:14px;margin-bottom:12px}
+.past small{color:var(--muted)}
+.past h4{margin:2px 0;font:500 26px var(--hand)}
+.past p{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.past img{width:100%;max-height:240px;object-fit:cover;border-radius:10px;margin-top:10px}
+.past .x{float:right;border:0;background:transparent;color:var(--danger);font-size:13px}
+.label{font:500 26px var(--hand);margin:16px 0 8px}
+
+/* photos */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid button{aspect-ratio:1;border:1px solid var(--line);border-radius:14px;overflow:hidden;padding:0;background:var(--card)}
+.grid img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* sheets */
+.backdrop{position:fixed;inset:0;background:rgba(60,30,36,.5);z-index:30;display:none;align-items:flex-end;justify-content:center}
+.backdrop.on{display:flex}
+.sheet{background:var(--paper);width:100%;max-width:520px;max-height:92vh;overflow:auto;border-radius:26px 26px 0 0;padding:20px 18px 24px}
+.sheet h3{margin:0 0 6px;font:500 32px var(--hand)}
+.sheet label.l{display:block;font-size:14px;color:var(--muted);margin:12px 0 4px}
+.sheet input[type=text],.sheet input[type=time],.sheet input[type=password],.sheet textarea,.sheet select{
+  width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.sheet textarea{min-height:84px;resize:vertical}
+.sheet .acts{display:flex;gap:10px;margin-top:18px}
+.sheet .acts .btn{flex:1;min-width:0;padding:12px 10px}
+.picker{display:flex;gap:8px;overflow-x:auto;padding:3px}
+.picker button{flex:none;width:58px;height:58px;border-radius:14px;border:2px solid var(--line);background:var(--card);padding:0;overflow:hidden;font-size:12px}
+.picker button[aria-pressed=true]{border-color:var(--rose);box-shadow:0 0 0 2px var(--soft)}
+.picker img{width:100%;height:100%;object-fit:cover;display:block}
+.picker.round button{border-radius:50%}
+
+/* ring */
+.ring{position:fixed;inset:0;background:#5A3A3D;color:#FFF1EE;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:8px}
+.ring.on{display:flex}
+.ring .big{font:500 76px/1 var(--hand)}
+.ring .what{font:500 40px/1.15 var(--hand);max-width:420px;overflow-wrap:anywhere}
+.ring .more{font-size:18px;max-width:420px;overflow-wrap:anywhere;color:#F3D6D6}
+.ring .ricon{width:84px;height:84px}
+.ring img.ph{max-width:220px;max-height:220px;border-radius:18px;object-fit:cover;margin-top:8px}
+.ring .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:20px}
+.ring .btn.ghost{background:transparent;color:#FFF1EE;border-color:rgba(255,255,255,.45)}
+@media (prefers-reduced-motion:no-preference){
+  .ring.on .big{animation:pulse 1s ease-in-out infinite}
+  @keyframes pulse{50%{transform:scale(1.06)}}
+}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:40;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px}
+.lightbox.on{display:flex}
+.lightbox img{max-width:100%;max-height:72vh;border-radius:12px}
+.lightbox .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
+.lightbox .btn.warn{color:#FFB3AB}
+.clk{margin-top:6px;border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:4px 12px;font-size:13px;color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);width:max-content;max-width:92%;background:#5A3A3D;color:#FFF1EE;padding:12px 16px;border-radius:16px;z-index:60;display:none;font-size:14px;text-align:center}
+.toast.on{display:block}
+.strip{font-size:12px;color:var(--muted);text-align:center;margin:6px 0 0}
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+
+  <!-- LOCK -->
+  <section class="screen on center" id="s-lock">
+    <h1 class="logo">Mee<i>♥</i></h1>
+    <p class="tag">Your little space...<span>your way ♥</span></p>
+    <img class="girl-lock" data-img="girl_lock" alt="">
+    <div class="field" id="lockForm">
+      <span class="lk">🔒</span>
+      <input type="password" id="pw" placeholder="Enter password" aria-label="Password" autocomplete="off">
+      <button type="button" class="eye" id="eye" aria-label="Password dikhao">👁</button>
+    </div>
+    <div class="err" id="lockErr" role="alert"></div>
+    <button class="btn wide" type="button" data-submit-for="#lockForm">Unlock ♥</button>
+    <div class="hint">Demo password: 1234 (settings me badal sakte ho)</div>
+    <img class="deco" data-img="tulips" alt="" style="right:14px;bottom:20px;width:62px">
+  </section>
+
+  <!-- WELCOME -->
+  <section class="screen center" id="s-welcome">
+    <div class="bubble">
+      <svg viewBox="0 0 300 140" aria-hidden="true">
+        <g id="cl" stroke="#4A2A2E" stroke-width="4" fill="#FFFBF7">
+          <circle cx="62" cy="78" r="38"/><circle cx="108" cy="46" r="42"/><circle cx="162" cy="40" r="45"/>
+          <circle cx="216" cy="50" r="42"/><circle cx="250" cy="84" r="36"/><circle cx="212" cy="104" r="34"/>
+          <circle cx="152" cy="106" r="36"/><circle cx="98" cy="104" r="33"/>
+        </g>
+        <g fill="#FFFBF7" stroke="none">
+          <circle cx="62" cy="78" r="36"/><circle cx="108" cy="46" r="40"/><circle cx="162" cy="40" r="43"/>
+          <circle cx="216" cy="50" r="40"/><circle cx="250" cy="84" r="34"/><circle cx="212" cy="104" r="32"/>
+          <circle cx="152" cy="106" r="34"/><circle cx="98" cy="104" r="31"/><rect x="70" y="52" width="170" height="52"/>
+        </g>
+      </svg>
+      <p>Hey love...<br>kya chal raha hai!! ♥</p>
+    </div>
+    <img class="girl-welcome" data-img="girl_welcome" alt="">
+    <div class="msg">So glad you're here!<br>Take a deep breath...<br>This is your little space<br>to feel, write, plan and be you ♥</div>
+    <button class="btn" id="goHome">Continue →</button>
+  </section>
+
+  <!-- HOME -->
+  <section class="screen" id="s-home">
+    <div class="home-top">
+      <h1>Mee <i>♥</i></h1>
+      <button class="icon-btn" id="openSettings" aria-label="Settings">⚙️</button>
+    </div>
+    <div class="hero">
+      <img class="q" data-img="quote_card" alt="Small steps make big days">
+      <img class="g" data-img="girl_home" alt="">
+    </div>
+    <div class="tiles">
+      <button class="tile" style="background:linear-gradient(160deg,#FBE3E5,var(--t-alarm))" data-go="alarm"><img data-img="ic_alarm" alt=""><b>Alarm</b><small>Wake up to<br>your dreams ♡</small></button>
+      <button class="tile" style="background:linear-gradient(160deg,#FDF1D8,var(--t-notes))" data-go="notes"><img data-img="ic_notes" alt=""><b>Notes</b><small>Little thoughts,<br>big feelings ♡</small></button>
+      <button class="tile" style="background:linear-gradient(160deg,#EEF2DE,var(--t-mine))" data-go="mine"><img data-img="ic_photo" alt=""><b>Mine</b><small>Your memories,<br>your world ♡</small></button>
+      <button class="tile" style="background:linear-gradient(160deg,#EFE8F7,var(--t-journal))" data-go="journal"><img data-img="ic_journal" alt=""><b>Journal</b><small>Write your<br>own story ♡</small></button>
+    </div>
+    <div class="flowers" style="margin-top:22px">
+      <img data-img="tulips" alt=""><div class="foot" style="margin:0">You got this ♥</div><img data-img="tulips" alt="" style="transform:scaleX(-1)">
+    </div>
+  </section>
+
+  <!-- NOTES -->
+  <section class="screen" id="s-notes">
+    <div class="top">
+      <button class="icon-btn" data-back aria-label="Wapas">←</button>
+      <h2>Notes</h2>
+      <button class="icon-btn fill" id="addNote" aria-label="Naya note">+</button>
+    </div>
+    <div class="search"><span>🔍</span><input id="noteSearch" type="search" placeholder="Search notes..." aria-label="Notes search"></div>
+    <div class="chips" id="noteChips"></div>
+    <div id="noteList"></div>
+    <div class="foot">Good thoughts ♥</div>
+  </section>
+
+  <!-- JOURNAL -->
+  <section class="screen" id="s-journal">
+    <div class="top">
+      <button class="icon-btn" data-back aria-label="Wapas">←</button>
+      <h2>Journal <i>♥</i></h2>
+      <button class="icon-btn" id="jCal" aria-label="Purane pages">🗓</button>
+    </div>
+    <div class="page" id="journalForm">
+      <h3>New Journal Page</h3>
+      <div class="sub">Write, pour, heal... ♥</div>
+      <img class="nb" data-img="notebook" alt="">
+      <div class="inp"><span>✏️</span><input type="text" id="jTitle" placeholder="Title (optional)" aria-label="Title"></div>
+      <div class="inp"><span>✨</span><textarea id="jText" placeholder="Start writing..." aria-label="Journal text"></textarea></div>
+      <img class="preview" id="jPrev" alt="" hidden>
+      <div class="acts">
+        <label class="btn ghost" for="jPhoto" style="min-width:0;padding:11px 16px;display:inline-block">🖼 Add photo</label>
+        <input type="file" id="jPhoto" accept="image/*" hidden>
+        <button class="btn" type="button" data-submit>Save ♥</button>
+      </div>
+    </div>
+    <div class="label" id="pastLabel">Purane pages</div>
+    <div id="journalList"></div>
+  </section>
+
+  <!-- ALARM -->
+  <section class="screen" id="s-alarm">
+    <div class="top">
+      <button class="icon-btn" data-back aria-label="Wapas">←</button>
+      <h2>Alarm</h2>
+      <button class="icon-btn fill" id="addAlarm" aria-label="Naya alarm">+</button>
+    </div>
+    <div class="chips" id="alarmChips"></div>
+    <div id="alarmList"></div>
+    <p class="strip">Mee ka alarm tabhi bajta hai jab app khula ho. Band hone par bhi bajane ke liye alarm par "⏰ Clock me lagao" dabao.</p>
+    <div class="foot">Better days ahead ♥</div>
+  </section>
+
+  <!-- MINE -->
+  <section class="screen" id="s-mine">
+    <div class="top">
+      <button class="icon-btn" data-back aria-label="Wapas">←</button>
+      <h2>Mine <i>♥</i></h2>
+      <label class="icon-btn fill" for="minePhoto" style="cursor:pointer" aria-label="Photo jodo">+</label>
+      <input type="file" id="minePhoto" accept="image/*" multiple hidden>
+    </div>
+    <div id="mineList"></div>
+    <div class="foot">Your memories ♥</div>
+  </section>
+</div>
+
+<button class="fab" id="fabNote" aria-label="Naya note">+</button>
+
+<!-- NOTE SHEET -->
+<div class="backdrop" id="noteSheet"><div class="sheet" id="noteForm">
+  <h3 id="noteSheetTitle">Naya note</h3>
+  <label class="l" for="nTitle">Title</label>
+  <input type="text" id="nTitle" placeholder="Jaise: Aaj ka din">
+  <label class="l" for="nBody">Note</label>
+  <textarea id="nBody" placeholder="Likho..."></textarea>
+  <label class="l" for="nCat">Category</label>
+  <select id="nCat"><option>Personal</option><option>Ideas</option><option>Random</option></select>
+  <label class="l">Chhoti picture</label>
+  <div class="picker" id="nPicker"></div>
+  <div class="acts">
+    <button type="button" class="btn ghost" data-close>Band karo</button>
+    <button type="button" class="btn warn" id="nDelete" hidden>Hatao</button>
+    <button type="button" data-submit class="btn">Save ♥</button>
+  </div>
+</div></div>
+
+<!-- ALARM SHEET -->
+<div class="backdrop" id="alarmSheet"><div class="sheet" id="alarmForm">
+  <h3 id="alarmSheetTitle">Naya alarm</h3>
+  <label class="l" for="aTime">Time</label>
+  <input type="time" id="aTime" required>
+  <label class="l" for="aTitle">Kya karna hai?</label>
+  <input type="text" id="aTitle" placeholder="Jaise: Dawai leni hai" required>
+  <label class="l" for="aMore">Extra note (optional)</label>
+  <textarea id="aMore" placeholder="Jaise: Paani ke saath, khana khane ke baad"></textarea>
+  <label class="l" for="aCat">Category</label>
+  <select id="aCat"><option>Morning</option><option>Study</option><option>Custom</option></select>
+  <label class="l">Icon</label>
+  <div class="picker round" id="aIconPicker"></div>
+  <label class="l">Photo (Mine se)</label>
+  <div class="picker" id="aPicker"></div>
+  <div class="acts">
+    <button type="button" class="btn ghost" data-close>Band karo</button>
+    <button type="button" class="btn warn" id="aDelete" hidden>Hatao</button>
+    <button type="button" data-submit class="btn">Save ♥</button>
+  </div>
+  <div class="acts" style="margin-top:10px"><button type="button" class="btn ghost" id="aClock">⏰ Clock me lagao</button></div>
+  <div class="acts" style="margin-top:10px"><button type="button" class="btn ghost" id="aTest">5 second me test karo</button></div>
+</div></div>
+
+<!-- SETTINGS SHEET -->
+<div class="backdrop" id="setSheet"><div class="sheet" id="setForm">
+  <h3>Settings</h3>
+  <label class="l" for="newPw">Naya password</label>
+  <input type="password" id="newPw" placeholder="Naya password likho" autocomplete="off">
+  <label class="l" for="toneSel">Alarm ki awaaz (jab app khula ho)</label>
+  <select id="toneSel"><option value="beep">Beep</option><option value="bell">Bell</option><option value="chime">Chime</option></select>
+  <div class="acts" style="margin-top:10px"><button type="button" class="btn ghost" id="toneTest">▶ Suno</button></div>
+  <div class="acts">
+    <button type="button" class="btn ghost" data-close>Band karo</button>
+    <button type="button" data-submit class="btn">Save ♥</button>
+  </div>
+  <div class="acts" style="margin-top:10px"><button type="button" class="btn ghost" id="lockNow">🔒 Abhi lock karo</button></div>
+</div></div>
+
+<!-- RING -->
+<div class="ring" id="ring" role="alertdialog" aria-live="assertive" aria-label="Alarm">
+  <img class="ricon" id="ringIcon" alt="">
+  <div class="big" id="ringTime"></div>
+  <div class="more">Ab ye karna hai:</div>
+  <div class="what" id="ringWhat"></div>
+  <div class="more" id="ringMore"></div>
+  <img class="ph" id="ringPhoto" alt="" hidden>
+  <div class="btns">
+    <button class="btn" id="ringDone">Ho gaya ♥</button>
+    <button class="btn ghost" id="ringSnooze">10 min baad</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <img id="lbImg" alt="">
+  <div style="display:flex;gap:10px">
+    <button class="btn ghost" id="lbClose">Band karo</button>
+    <button class="btn warn" id="lbDelete">Hatao</button>
+  </div>
+</div>
+
+<script src="mee-assets.js"></script>
+<script>
+const IMG = window.IMG;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+$$('[data-img]').forEach(e => e.src = IMG[e.dataset.img]);
+let nextId = 1; const uid = () => nextId++;
+const fmtTime = hm => { const [h, m] = hm.split(':').map(Number); return { t: (h % 12 || 12) + ':' + pad(m), ap: h < 12 ? 'AM' : 'PM' }; };
+const fmtDate = d => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+const daysAgo = n => new Date(Date.now() - n * 86400000);
+
+const S = {
+  pw: '1234',
+  photos: [],
+  notes: [
+    { id: uid(), title: 'Aaj ka din...', body: 'It was a good day. Thoda thakawat thi but still...', cat: 'Personal', thumb: 'th_tulip', at: daysAgo(1) },
+    { id: uid(), title: 'Kuchh baatein...', body: 'Zindagi shayad isi ka naam hai, thoda sa khwaab...', cat: 'Ideas', thumb: 'th_scene', at: daysAgo(2) },
+    { id: uid(), title: 'Chai + Baarish', body: 'Rain, chai and a heavy heart... perfect combination.', cat: 'Random', thumb: 'th_chai', at: daysAgo(3) },
+    { id: uid(), title: 'Just for me', body: 'You are enough. Always.', cat: 'Personal', thumb: 'th_heart', at: daysAgo(4) }
+  ],
+  alarms: [
+    { id: uid(), time: '06:30', title: 'Wake up baby', more: '', cat: 'Morning', icon: 'al_sun', photoId: null, on: true, lastDay: null, snoozeAt: null },
+    { id: uid(), time: '08:00', title: 'Study time', more: 'Pehle physics, phir chemistry', cat: 'Study', icon: 'al_book', photoId: null, on: true, lastDay: null, snoozeAt: null },
+    { id: uid(), time: '12:30', title: 'Lunch break', more: '', cat: 'Custom', icon: 'al_food', photoId: null, on: true, lastDay: null, snoozeAt: null },
+    { id: uid(), time: '16:00', title: 'Drink water', more: '', cat: 'Custom', icon: 'al_water', photoId: null, on: false, lastDay: null, snoozeAt: null },
+    { id: uid(), time: '20:00', title: 'Read a book', more: '', cat: 'Custom', icon: 'al_read', photoId: null, on: true, lastDay: null, snoozeAt: null }
+  ],
+  journal: []
+};
+const THUMBS = ['th_tulip', 'th_scene', 'th_chai', 'th_heart'];
+const ICONS = ['al_sun', 'al_book', 'al_food', 'al_water', 'al_read'];
+const defThumb = cat => ({ Personal: 'th_tulip', Ideas: 'th_scene', Random: 'th_chai' }[cat] || 'th_tulip');
+const defIcon = cat => ({ Morning: 'al_sun', Study: 'al_book', Custom: 'al_water' }[cat] || 'al_water');
+const photoById = id => S.photos.find(p => p.id === id);
+
+/* save / load (band karne par bhi data rahega) */
+const KEY = 'mee-v1';
+let warned = false;
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { if (e && e.name === 'QuotaExceededError' && !warned) { warned = true; alert('Jagah bhar gayi hai. Kuch purani photos hata do.'); } }
+}
+try {
+  const raw = localStorage.getItem(KEY);
+  if (raw) {
+    Object.assign(S, JSON.parse(raw));
+    S.notes.forEach(n => n.at = new Date(n.at));
+    S.journal.forEach(j => j.at = new Date(j.at));
+    nextId = Math.max(0, ...[...S.notes, ...S.alarms, ...S.journal, ...S.photos].map(x => x.id)) + 1;
+  }
+} catch (e) {}
+function fileToDataUrl(file, max = 800) {
+  return new Promise((res, rej) => {
+    const img = new Image(), u = URL.createObjectURL(file);
+    img.onload = () => {
+      const r = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(u); res(c.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = () => { URL.revokeObjectURL(u); rej(new Error('photo load')); };
+    img.src = u;
+  });
+}
+
+/* forms ki jagah buttons */
+function onSubmit(formSel, fn) {
+  const f = $(formSel);
+  const b = f.querySelector('[data-submit]') || $('[data-submit-for="' + formSel + '"]');
+  const run = () => fn({ preventDefault() {} });
+  b.addEventListener('click', run);
+  f.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'file') { e.preventDefault(); run(); }
+  });
+}
+
+/* navigation */
+let stack = ['lock'];
+function show(name) {
+  $$('.screen').forEach(s => s.classList.toggle('on', s.id === 's-' + name));
+  $('#fabNote').classList.toggle('on', name === 'notes');
+  window.scrollTo(0, 0);
+}
+function go(name) { stack.push(name); show(name); }
+function back() { if (stack.length > 1) { stack.pop(); show(stack[stack.length - 1]); } }
+function replace(name) { stack = [name]; show(name); }
+$$('[data-go]').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
+$$('[data-back]').forEach(b => b.addEventListener('click', back));
+
+/* lock */
+$('#eye').addEventListener('click', () => { const i = $('#pw'); i.type = i.type === 'password' ? 'text' : 'password'; });
+onSubmit('#lockForm', e => {
+  if ($('#pw').value === S.pw) { $('#lockErr').textContent = ''; $('#pw').value = ''; $('#pw').type = 'password'; replace('welcome'); }
+  else $('#lockErr').textContent = 'Password galat hai, dobara try karo.';
+});
+$('#goHome').addEventListener('click', () => replace('home'));
+
+/* sheets */
+const openSheet = id => $(id).classList.add('on');
+const closeSheets = () => $$('.backdrop').forEach(b => b.classList.remove('on'));
+$$('[data-close]').forEach(b => b.addEventListener('click', closeSheets));
+$$('.backdrop').forEach(b => b.addEventListener('click', e => { if (e.target === b) closeSheets(); }));
+
+/* settings */
+$('#openSettings').addEventListener('click', () => { $('#newPw').value = ''; $('#toneSel').value = S.tone || 'beep'; openSheet('#setSheet'); });
+$('#toneSel').addEventListener('change', e => { S.tone = e.target.value; save(); });
+$('#toneTest').addEventListener('click', () => { if (!ac) { const C = window.AudioContext || window.webkitAudioContext; if (C) ac = new C(); } if (ac && ac.state === 'suspended') ac.resume(); tone(); });
+onSubmit('#setForm', e => { const v = $('#newPw').value; if (v) { S.pw = v; save(); } closeSheets(); });
+$('#lockNow').addEventListener('click', () => { closeSheets(); replace('lock'); });
+
+/* notes */
+let noteCat = 'All', editNote = null, nThumb = null;
+function renderNoteChips() {
+  $('#noteChips').innerHTML = ['All', 'Personal', 'Ideas', 'Random'].map(c => `<button class="chip" data-nc="${c}" aria-pressed="${c === noteCat}">${c}</button>`).join('');
+}
+function renderNotes() {
+  save();
+  const q = $('#noteSearch').value.trim().toLowerCase();
+  const list = S.notes.filter(n => (noteCat === 'All' || n.cat === noteCat) && (!q || (n.title + ' ' + n.body).toLowerCase().includes(q)));
+  $('#noteList').innerHTML = list.length ? list.map(n => `
+    <button class="row" data-note="${n.id}">
+      <img class="th" src="${IMG[n.thumb || defThumb(n.cat)]}" alt="">
+      <div class="tx"><b>${esc(n.title || 'Bina title')}</b><p>${esc(n.body)}</p><small>${esc(fmtDate(n.at))}</small></div>
+      <span class="more" aria-hidden="true">⋯</span>
+    </button>`).join('') : '<div class="empty">Yahan abhi kuch nahi hai.<br>+ dabao aur pehla note likho ♥</div>';
+}
+function renderNPicker() {
+  $('#nPicker').innerHTML = THUMBS.map(t => `<button type="button" data-th="${t}" aria-pressed="${nThumb === t}" aria-label="Picture chuno"><img src="${IMG[t]}" alt=""></button>`).join('');
+}
+$('#nPicker').addEventListener('click', e => { const b = e.target.closest('[data-th]'); if (b) { nThumb = b.dataset.th; renderNPicker(); } });
+$('#noteSearch').addEventListener('input', renderNotes);
+$('#noteChips').addEventListener('click', e => { const b = e.target.closest('[data-nc]'); if (b) { noteCat = b.dataset.nc; renderNoteChips(); renderNotes(); } });
+function openNewNote() {
+  editNote = null; $('#noteSheetTitle').textContent = 'Naya note';
+  $('#nTitle').value = ''; $('#nBody').value = ''; $('#nCat').value = 'Personal'; nThumb = 'th_tulip';
+  $('#nDelete').hidden = true; renderNPicker(); openSheet('#noteSheet');
+}
+$('#addNote').addEventListener('click', openNewNote);
+$('#fabNote').addEventListener('click', openNewNote);
+$('#nCat').addEventListener('change', () => { if (!editNote) { nThumb = defThumb($('#nCat').value); renderNPicker(); } });
+$('#noteList').addEventListener('click', e => {
+  const b = e.target.closest('[data-note]'); if (!b) return;
+  const n = S.notes.find(x => x.id === +b.dataset.note); if (!n) return;
+  editNote = n; $('#noteSheetTitle').textContent = 'Note badlo';
+  $('#nTitle').value = n.title; $('#nBody').value = n.body; $('#nCat').value = n.cat; nThumb = n.thumb || defThumb(n.cat);
+  $('#nDelete').hidden = false; renderNPicker(); openSheet('#noteSheet');
+});
+onSubmit('#noteForm', e => {
+  const title = $('#nTitle').value.trim(), body = $('#nBody').value.trim(), cat = $('#nCat').value;
+  if (!title && !body) return;
+  if (editNote) Object.assign(editNote, { title, body, cat, thumb: nThumb });
+  else S.notes.unshift({ id: uid(), title, body, cat, thumb: nThumb, at: new Date() });
+  closeSheets(); renderNotes();
+});
+$('#nDelete').addEventListener('click', () => { S.notes = S.notes.filter(n => n !== editNote); closeSheets(); renderNotes(); });
+
+/* journal */
+let jFile = null;
+$('#jCal').addEventListener('click', () => $('#pastLabel').scrollIntoView({ behavior: 'smooth' }));
+$('#jPhoto').addEventListener('change', e => {
+  jFile = e.target.files[0] || null;
+  const p = $('#jPrev');
+  if (jFile) { p.src = URL.createObjectURL(jFile); p.hidden = false; } else p.hidden = true;
+});
+onSubmit('#journalForm', async e => {
+  const title = $('#jTitle').value.trim(), text = $('#jText').value.trim();
+  if (!title && !text && !jFile) return;
+  let photoId = null;
+  if (jFile) { photoId = uid(); S.photos.unshift({ id: photoId, url: await fileToDataUrl(jFile) }); }
+  S.journal.unshift({ id: uid(), title, text, photoId, at: new Date() });
+  $('#jTitle').value = ''; $('#jText').value = ''; $('#jPhoto').value = ''; jFile = null; $('#jPrev').hidden = true;
+  renderJournal(); renderMine();
+});
+function renderJournal() {
+  save();
+  $('#journalList').innerHTML = S.journal.length ? S.journal.map(j => {
+    const p = j.photoId && photoById(j.photoId);
+    return `<article class="past"><button class="x" data-del-j="${j.id}">Hatao</button>
+      <small>${esc(fmtDate(j.at))}</small>${j.title ? `<h4>${esc(j.title)}</h4>` : ''}
+      ${j.text ? `<p>${esc(j.text)}</p>` : ''}${p ? `<img src="${p.url}" alt="">` : ''}</article>`;
+  }).join('') : '<div class="empty">Abhi koi page nahi likha.<br>Upar se shuru karo ♥</div>';
+}
+$('#journalList').addEventListener('click', e => {
+  const b = e.target.closest('[data-del-j]'); if (!b) return;
+  S.journal = S.journal.filter(j => j.id !== +b.dataset.delJ); renderJournal();
+});
+
+/* mine (photos) */
+$('#minePhoto').addEventListener('change', async e => {
+  const files = [...e.target.files]; e.target.value = '';
+  for (const f of files) S.photos.unshift({ id: uid(), url: await fileToDataUrl(f) });
+  renderMine();
+});
+function renderMine() {
+  save();
+  $('#mineList').innerHTML = S.photos.length
+    ? '<div class="grid">' + S.photos.map(p => `<button data-photo="${p.id}" aria-label="Photo kholo"><img src="${p.url}" alt=""></button>`).join('') + '</div>'
+    : '<div class="empty">Yahan tumhari yaadein aayengi.<br>+ dabao aur pehli photo jodo ♥</div>';
+}
+let lbId = null;
+$('#mineList').addEventListener('click', e => {
+  const b = e.target.closest('[data-photo]'); if (!b) return;
+  const p = photoById(+b.dataset.photo); if (!p) return;
+  lbId = p.id; $('#lbImg').src = p.url; $('#lightbox').classList.add('on');
+});
+$('#lbClose').addEventListener('click', () => $('#lightbox').classList.remove('on'));
+$('#lbDelete').addEventListener('click', () => {
+  S.photos = S.photos.filter(p => p.id !== lbId);
+  S.alarms.forEach(a => { if (a.photoId === lbId) a.photoId = null; });
+  S.journal.forEach(j => { if (j.photoId === lbId) j.photoId = null; });
+  $('#lightbox').classList.remove('on'); renderMine(); renderJournal(); renderAlarms();
+});
+
+/* alarms */
+let alarmCat = 'All', editAlarm = null, aPhoto = null, aIcon = null;
+function renderAlarmChips() {
+  $('#alarmChips').innerHTML = ['All', 'Morning', 'Study', 'Custom'].map(c => `<button class="chip" data-ac="${c}" aria-pressed="${c === alarmCat}">${c}</button>`).join('');
+}
+function renderAlarms() {
+  save();
+  const list = S.alarms.filter(a => alarmCat === 'All' || a.cat === alarmCat).sort((a, b) => a.time.localeCompare(b.time));
+  $('#alarmList').innerHTML = list.length ? list.map(a => {
+    const t = fmtTime(a.time), p = a.photoId && photoById(a.photoId);
+    return `<div class="row" style="${a.on ? '' : 'opacity:.65'}">
+      <button class="ic" data-alarm="${a.id}" aria-label="Alarm badlo"><img src="${p ? p.url : IMG[a.icon || defIcon(a.cat)]}" alt="" style="${p ? 'border-radius:50%;object-fit:cover' : ''}"></button>
+      <div class="tx" data-alarm="${a.id}">
+        <div class="alarm-time">${t.t} <span>${t.ap}</span></div>
+        <div class="alarm-lbl">${esc(a.title)}</div>
+        ${a.more ? `<div class="alarm-sub">${esc(a.more)}</div>` : ''}
+        <button class="clk" data-clk="${a.id}">⏰ Clock me lagao</button>
+      </div>
+      <input type="checkbox" class="tog" data-tog="${a.id}" ${a.on ? 'checked' : ''} aria-label="Alarm chalu ya band">
+    </div>`;
+  }).join('') : '<div class="empty">Koi alarm nahi hai.<br>+ dabao aur pehla alarm lagao ♥</div>';
+}
+$('#alarmChips').addEventListener('click', e => { const b = e.target.closest('[data-ac]'); if (b) { alarmCat = b.dataset.ac; renderAlarmChips(); renderAlarms(); } });
+$('#alarmList').addEventListener('change', e => {
+  const id = e.target.dataset.tog; if (!id) return;
+  const a = S.alarms.find(x => x.id === +id); if (a) { a.on = e.target.checked; a.snoozeAt = null; renderAlarms(); }
+});
+$('#alarmList').addEventListener('click', e => {
+  const c = e.target.closest('[data-clk]');
+  if (c) { const a = S.alarms.find(x => x.id === +c.dataset.clk); if (a) addToClock(a); return; }
+  const b = e.target.closest('[data-alarm]'); if (!b) return;
+  const a = S.alarms.find(x => x.id === +b.dataset.alarm); if (a) openAlarmSheet(a);
+});
+function renderPicker() {
+  $('#aPicker').innerHTML = `<button type="button" data-pick="" aria-pressed="${aPhoto === null}">Koi nahi</button>` +
+    S.photos.map(p => `<button type="button" data-pick="${p.id}" aria-pressed="${aPhoto === p.id}" aria-label="Photo chuno"><img src="${p.url}" alt=""></button>`).join('');
+  $('#aIconPicker').innerHTML = ICONS.map(i => `<button type="button" data-ico="${i}" aria-pressed="${aIcon === i}" aria-label="Icon chuno"><img src="${IMG[i]}" alt=""></button>`).join('');
+}
+$('#aPicker').addEventListener('click', e => {
+  const b = e.target.closest('[data-pick]'); if (!b) return;
+  aPhoto = b.dataset.pick === '' ? null : +b.dataset.pick; renderPicker();
+});
+$('#aIconPicker').addEventListener('click', e => { const b = e.target.closest('[data-ico]'); if (b) { aIcon = b.dataset.ico; renderPicker(); } });
+$('#aCat').addEventListener('change', () => { if (!editAlarm) { aIcon = defIcon($('#aCat').value); renderPicker(); } });
+function openAlarmSheet(a) {
+  editAlarm = a || null;
+  $('#alarmSheetTitle').textContent = a ? 'Alarm badlo' : 'Naya alarm';
+  $('#aTime').value = a ? a.time : ''; $('#aTitle').value = a ? a.title : ''; $('#aMore').value = a ? a.more : '';
+  $('#aCat').value = a ? a.cat : 'Custom'; aPhoto = a ? a.photoId : null; aIcon = a ? (a.icon || defIcon(a.cat)) : defIcon('Custom');
+  $('#aDelete').hidden = !a; renderPicker(); openSheet('#alarmSheet');
+}
+$('#addAlarm').addEventListener('click', () => openAlarmSheet(null));
+onSubmit('#alarmForm', e => {
+  const time = $('#aTime').value, title = $('#aTitle').value.trim();
+  if (!time || !title) return;
+  const data = { time, title, more: $('#aMore').value.trim(), cat: $('#aCat').value, icon: aIcon, photoId: aPhoto };
+  if (editAlarm) Object.assign(editAlarm, data, { on: true, snoozeAt: null, lastDay: null });
+  else S.alarms.push({ id: uid(), ...data, on: true, lastDay: null, snoozeAt: null });
+  closeSheets(); renderAlarms();
+});
+$('#aDelete').addEventListener('click', () => { S.alarms = S.alarms.filter(a => a !== editAlarm); closeSheets(); renderAlarms(); });
+$('#aTest').addEventListener('click', () => {
+  const now = new Date(), hm = pad(now.getHours()) + ':' + pad(now.getMinutes());
+  const demo = { time: hm, title: $('#aTitle').value.trim() || 'Test alarm: yahan aapka note dikhega', more: $('#aMore').value.trim(), photoId: aPhoto, icon: aIcon, cat: $('#aCat').value };
+  closeSheets();
+  setTimeout(() => { if (!ringing) ring(demo); }, 5000);
+});
+
+/* Samsung / phone Clock me asli alarm */
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 9000); }
+function clockUrl(a) {
+  const [h, m] = a.time.split(':').map(Number);
+  const msg = (a.title + (a.more ? ': ' + a.more : '')).slice(0, 120);
+  return 'intent:#Intent;action=android.intent.action.SET_ALARM;i.android.intent.extra.alarm.HOUR=' + h + ';i.android.intent.extra.alarm.MINUTES=' + m + ';S.android.intent.extra.alarm.MESSAGE=' + encodeURIComponent(msg) + ';end';
+}
+function addToClock(a) {
+  const t = fmtTime(a.time);
+  toast('Clock app khul raha hai. Wahan alarm Save kar do. Na khule to Clock me khud ' + t.t + ' ' + t.ap + ' ka alarm lagao, naam: ' + a.title);
+  window.location.href = clockUrl(a);
+}
+$('#aClock').addEventListener('click', () => {
+  const time = $('#aTime').value, title = $('#aTitle').value.trim();
+  if (!time || !title) { toast('Pehle time aur "Kya karna hai?" bharo.'); return; }
+  addToClock({ time, title, more: $('#aMore').value.trim() });
+});
+
+/* ringing */
+let ac = null, beepTimer = null, ringing = null;
+document.addEventListener('click', () => {
+  if (!ac) { const C = window.AudioContext || window.webkitAudioContext; if (C) ac = new C(); }
+  if (ac && ac.state === 'suspended') ac.resume();
+});
+function tone() {
+  if (!ac) return;
+  const k = S.tone || 'beep', now = ac.currentTime;
+  const note = (f, st, d, type = 'sine', vol = 0.25) => {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.value = f; o.connect(g); g.connect(ac.destination);
+    g.gain.setValueAtTime(vol, now + st); g.gain.exponentialRampToValueAtTime(0.001, now + st + d);
+    o.start(now + st); o.stop(now + st + d);
+  };
+  if (k === 'bell') { note(660, 0, 1.2, 'triangle'); note(990, 0.05, 1.0, 'triangle', 0.15); }
+  else if (k === 'chime') { note(523, 0, 0.4); note(659, 0.25, 0.4); note(784, 0.5, 0.7); }
+  else note(880, 0, 0.4);
+}
+function ring(a) {
+  ringing = a;
+  const t = fmtTime(a.time);
+  $('#ringTime').textContent = t.t + ' ' + t.ap;
+  $('#ringWhat').textContent = a.title;
+  $('#ringMore').textContent = a.more || '';
+  $('#ringIcon').src = IMG[a.icon || defIcon(a.cat)];
+  const p = a.photoId && photoById(a.photoId), img = $('#ringPhoto');
+  if (p) { img.src = p.url; img.hidden = false; } else img.hidden = true;
+  $('#ring').classList.add('on');
+  tone(); beepTimer = setInterval(tone, 1500);
+  if (navigator.vibrate) navigator.vibrate([300, 200, 300]);
+}
+function stopRing() { clearInterval(beepTimer); beepTimer = null; $('#ring').classList.remove('on'); ringing = null; }
+$('#ringDone').addEventListener('click', stopRing);
+$('#ringSnooze').addEventListener('click', () => { if (ringing) ringing.snoozeAt = Date.now() + 10 * 60000; stopRing(); });
+setInterval(() => {
+  const n = new Date(), hm = pad(n.getHours()) + ':' + pad(n.getMinutes()), day = n.toDateString();
+  for (const a of S.alarms) {
+    if (!a.on || ringing) continue;
+    if (a.snoozeAt && Date.now() >= a.snoozeAt) { a.snoozeAt = null; ring(a); }
+    else if (a.time === hm && a.lastDay !== day) { a.lastDay = day; ring(a); }
+  }
+}, 1000);
+
+/* gallery click on hero etc */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-del-x]'); if (b) return;
+});
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+renderNoteChips(); renderNotes(); renderJournal(); renderMine(); renderAlarmChips(); renderAlarms();
+</script>
+</body>
+</html>
